@@ -1,6 +1,9 @@
 package
 {
 	import flash.display.Sprite;
+	import flash.display.StageAlign;
+	import flash.display.StageQuality;
+	import flash.display.StageScaleMode;
 	import flash.events.NetStatusEvent;
 	import flash.media.Camera;
 	import flash.media.Microphone;
@@ -24,9 +27,14 @@ package
 		{
 			log = new TextField();
 			log.width = 400;
-			log.height = 100;
+			log.height = 300;
+			log.border = true;
 			log.y = 315;
 			addChild(log);
+			
+			stage.align = StageAlign.TOP_LEFT;
+			stage.scaleMode = StageScaleMode.NO_SCALE;
+			stage.quality = StageQuality.BEST;
 			
 			nc = new NetConnection(); 
 			nc.addEventListener(NetStatusEvent.NET_STATUS, onNetStatus); 
@@ -34,11 +42,11 @@ package
 		}
 		
 		protected function onNetStatus(event:NetStatusEvent):void{ 
-			log.appendText(event.info.code + "\n"); 
+			log.appendText(event.info.code + "\n");
 			if(event.info.code == "NetConnection.Connect.Success"){ 
 				publishCamera(); 
 				displayPublishingVideo(); 
-				displayPlaybackVideo(); 
+				//displayPlaybackVideo(); 
 			} 
 		} 
 		
@@ -48,7 +56,7 @@ package
 			ns = new NetStream(nc); 
 			ns.attachCamera(cam); 
 			ns.attachAudio(mic); 
-			ns.publish("teste", "record"); 
+			ns.publish("teste", "live"); 
 		}
 		
 		protected function displayPublishingVideo():void { 
