@@ -56,7 +56,7 @@ package
 			ns = new NetStream(nc); 
 			ns.attachCamera(cam); 
 			ns.attachAudio(mic); 
-			ns.publish("teste", "live"); 
+			ns.publish("teste", "record"); 
 		}
 		
 		protected function displayPublishingVideo():void { 
