@@ -4,6 +4,7 @@ package
 	import flash.display.StageAlign;
 	import flash.display.StageQuality;
 	import flash.display.StageScaleMode;
+	import flash.events.NetDataEvent;
 	import flash.events.NetStatusEvent;
 	import flash.media.Camera;
 	import flash.media.Microphone;
@@ -36,24 +37,21 @@ package
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.quality = StageQuality.BEST;
 			
-			nc = new NetConnection(); 
+			nc = new NetConnection();
+			nc.client = this;
 			nc.addEventListener(NetStatusEvent.NET_STATUS, onNetStatus); 
-			nc.connect("rtmp://107.170.63.197:1935/silveiracamilo_cam_teste");
+			//nc.connect("rtmp://107.170.63.197:1935/silveiracamilo_cam_teste_stream?password=sabixao", "sabixao");
+			nc.connect("rtmp://107.170.63.197:1935/silveiracamilo_cam_teste_live?password=sabixao", "sabixao");
+			//nc.connect("rtmp://107.170.63.197:1935/vod");
 		}
-		
-		protected function onNetStatus(event:NetStatusEvent):void{ 
-			log.appendText(event.info.code + "\n");
-			if(event.info.code == "NetConnection.Connect.Success"){ 
-				publishCamera(); 
-				displayPublishingVideo(); 
-				//displayPlaybackVideo(); 
-			} 
-		} 
 		
 		protected function publishCamera():void { 
 			cam = Camera.getCamera(); 
 			mic = Microphone.getMicrophone(); 
-			ns = new NetStream(nc); 
+			ns = new NetStream(nc);
+			ns.client = this;
+			ns.addEventListener(NetDataEvent.MEDIA_TYPE_DATA, netdataHandler);
+			ns.addEventListener(NetStatusEvent.NET_STATUS, netstreamHandler);
 			ns.attachCamera(cam); 
 			ns.attachAudio(mic); 
 			ns.publish("teste", "record"); 
@@ -75,6 +73,31 @@ package
 			vidPlayer.y = 10; 
 			vidPlayer.attachNetStream(nsPlayer); 
 			addChild(vidPlayer); 
+		}
+		
+		protected function onNetStatus(event:NetStatusEvent):void{ 
+			log.appendText(event.info.code + "\n");
+			if(event.info.code == "NetConnection.Connect.Success"){ 
+				publishCamera(); 
+				displayPublishingVideo(); 
+				//displayPlaybackVideo(); 
+			} 
+		} 
+		
+		protected function netstreamHandler(event:NetStatusEvent):void
+		{
+			for(var prop:String in event.info) {
+				log.appendText("netstreamHandler: "+ prop + ":"  +event.info[prop] + "\n");	
+			}
+			
+		}
+		
+		protected function netdataHandler(event:NetDataEvent):void
+		{
+			for(var prop:String in event.info) {
+				log.appendText("netdataHandler: "+ prop + ":"  +event.info[prop] + "\n");	
+			}
+						
 		}
 	}
 }
