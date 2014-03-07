@@ -8,6 +8,9 @@ package
 	import flash.events.NetDataEvent;
 	import flash.events.NetStatusEvent;
 	import flash.media.Camera;
+	import flash.media.H264Level;
+	import flash.media.H264Profile;
+	import flash.media.H264VideoStreamSettings;
 	import flash.media.Microphone;
 	import flash.media.Video;
 	import flash.net.NetConnection;
@@ -46,7 +49,8 @@ package
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.quality = StageQuality.BEST;
 			
-			getToken();
+			//getToken();
+			connectNetConnection();
 		}
 		
 		protected function getToken():void
@@ -64,8 +68,8 @@ package
 			nc.client = this;
 			nc.addEventListener(NetStatusEvent.NET_STATUS, onNetStatus); 
 			//nc.connect("rtmp://107.170.63.197:1935/silveiracamilo_cam_teste_stream?password=sabixao", "sabixao");
-			nc.connect("rtmp://107.170.63.197:1935/silveiracamilo_cam_teste_live?password=sabixao&token="+token);
-			//nc.connect("rtmp://107.170.63.197:1935/teste_live");
+			//nc.connect("rtmp://107.170.63.197:1935/silveiracamilo_cam_teste_live?password=sabixao&token="+token);
+			nc.connect("rtmp://107.170.63.197:1935/teste_live");
 			//nc.connect("rtmp://107.170.63.197:1935/vod");
 		}
 		
@@ -73,12 +77,18 @@ package
 			cam = Camera.getCamera(); 
 			mic = Microphone.getMicrophone(); 
 			ns = new NetStream(nc);
+			log.appendText("videoCodec:"+ns.videoCodec+"\n");
 			ns.client = this;
+			
+			var h264Settings:H264VideoStreamSettings = new H264VideoStreamSettings();
+			h264Settings.setProfileLevel(H264Profile.BASELINE, H264Level.LEVEL_2);
+			ns.videoStreamSettings = h264Settings;
+			
 			ns.addEventListener(NetDataEvent.MEDIA_TYPE_DATA, netdataHandler);
 			ns.addEventListener(NetStatusEvent.NET_STATUS, netstreamHandler);
 			ns.attachCamera(cam); 
 			ns.attachAudio(mic); 
-			ns.publish("stream1", "live"); 
+			ns.publish("stream1", "record"); 
 		}
 		
 		protected function displayPublishingVideo():void { 
