@@ -88,7 +88,7 @@ package
 			ns.addEventListener(NetStatusEvent.NET_STATUS, netstreamHandler);
 			ns.attachCamera(cam); 
 			ns.attachAudio(mic); 
-			ns.publish("stream1", "record"); 
+			ns.publish("stream1", "live"); 
 		}
 		
 		protected function displayPublishingVideo():void { 
@@ -101,7 +101,7 @@ package
 		
 		protected function displayPlaybackVideo():void{ 
 			nsPlayer = new NetStream(nc);  
-			nsPlayer.play("teste"); 
+			nsPlayer.play("stream1"); 
 			vidPlayer = new Video(); 
 			vidPlayer.x = cam.width + 20; 
 			vidPlayer.y = 10; 
